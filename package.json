@@ -1,19 +1,23 @@
 {
-  "name": "@maxpaulus/pi-rex-btw",
-  "version": "1.0.0",
-  "description": "Multi-turn Pi side chats in Rex floating terminals",
-  "type": "module",
-  "keywords": ["pi-package"],
-  "pi": {
-    "extensions": ["./extensions/btw.ts"]
-  },
-  "scripts": {
-    "test": "node --disable-warning=ExperimentalWarning --test test/*.test.ts"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/maxpaulus43/pi-rex-btw"
-  },
-  "author": "",
-  "license": "ISC"
+    "name": "@maxpaulus/pi-rex-btw",
+    "version": "1.0.1",
+    "description": "Multi-turn Pi side chats in Rex floating terminals",
+    "type": "module",
+    "keywords": [
+        "pi-package"
+    ],
+    "pi": {
+        "extensions": [
+            "./extensions/btw.ts"
+        ]
+    },
+    "scripts": {
+        "test": "node --disable-warning=ExperimentalWarning --test test/*.test.ts"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/maxpaulus43/pi-rex-btw"
+    },
+    "author": "",
+    "license": "ISC"
 }
