@@ -16,3 +16,9 @@ Selecting a thread restores its live float or reopens the saved chat. Close the 
 The child Pi gets a text snapshot of the parent branch at launch. Reopening the chat does not refresh the snapshot. The child loads your normal Pi extensions, including model providers, with Pi's built-in MCP integration off. It starts with `read`, `grep`, `find`, and `ls`. Extensions can change the tool list or act on their own; this is not a sandbox.
 
 Each child owns its transcript. The parent saves only a labelled link; older `pi-btw` branches remain unchanged in `/tree`. Keep the `.btw` directory next to the parent session file if you move or back up the session. Pi does not save a blank parent session until it contains a main-chat message.
+
+## Release
+
+If the package does not exist on npm yet, publish the first version manually with `npm publish --access public`. Then [configure npm trusted publishing](https://docs.npmjs.com/trusted-publishers/) for `maxpaulus43/pi-rex-btw` and `publish.yml`, with direct publishing allowed. No npm token is needed in GitHub Actions.
+
+For later releases, bump `package.json` and push to `main`. The workflow runs `npm test`, publishes versions that aren't already on npm, and creates a matching GitHub release.
