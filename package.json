@@ -1,10 +1,14 @@
 {
   "name": "@maxpaulus/pi-rex-btw",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Multi-turn Pi side chats in Rex floating terminals",
+  "type": "module",
+  "keywords": ["pi-package"],
+  "pi": {
+    "extensions": ["./extensions/btw.ts"]
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node --disable-warning=ExperimentalWarning --test test/*.test.ts"
   },
   "author": "",
   "license": "ISC"
