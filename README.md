@@ -19,6 +19,6 @@ Each child owns its transcript. The parent saves only a labelled link; older `pi
 
 ## Release
 
-If the package does not exist on npm yet, publish the first version manually with `npm publish --access public`. Then [configure npm trusted publishing](https://docs.npmjs.com/trusted-publishers/) for `maxpaulus43/pi-rex-btw` and `publish.yml`, with direct publishing allowed. No npm token is needed in GitHub Actions.
+If the package does not exist on npm yet, publish the first version manually with `npm publish --access public`. Then [configure npm trusted publishing](https://docs.npmjs.com/trusted-publishers/) for your GitHub repository and the `publish.yml` workflow, with direct publishing allowed. No npm token is needed in GitHub Actions.
 
 For later releases, bump `package.json` and push to `main`. The workflow runs `npm test`, publishes versions that aren't already on npm, and creates a matching GitHub release.
