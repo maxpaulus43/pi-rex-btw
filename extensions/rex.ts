@@ -1,5 +1,5 @@
 import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
-import { join, resolve } from "node:path";
+import { delimiter, join, resolve } from "node:path";
 import type { ExtensionAPI, SessionEntry } from "@earendil-works/pi-coding-agent";
 
 export interface Thread {
@@ -62,7 +62,8 @@ export async function openFloat(pi: Pick<ExtensionAPI, "exec">, target: Target, 
 	const window = view.windows.find(w => w.layers.some(l => l.blocks?.some(b => b.block_id === target.block)));
 	if (!window) throw new Error("Rex could not find the parent terminal.");
 	const resumed = readdirSync(directory).some(file => file.endsWith(`_${thread.id}.jsonl`));
-	const command = [process.execPath, resolve(process.argv[1]!), "--no-mcp",
+	// The parent already picks the starting model; don't recheck its saved model scope here.
+	const command = [process.execPath, resolve(process.argv[1]!), "--no-mcp", "--models", "",
 		"--no-skills", "--no-prompt-templates", "--no-context-files", "--tools", "read,grep,find,ls",
 		"--session-dir", directory, "--session-id", thread.id, "--append-system-prompt", snapshot];
 	if (!resumed) {
@@ -74,7 +75,8 @@ export async function openFloat(pi: Pick<ExtensionAPI, "exec">, target: Target, 
 		window_id: window.window_id, bounds: [0.1, 0.1, 0.8, 0.8], focus: true,
 		layout: { block: {
 			flavor: "com.superlogical.terminal.shell", label: `BTW · ${thread.title}`,
-			options: { shell: "none", cwd: target.cwd, command },
+			// Provider CLIs may be on the parent shell's PATH but not Rex's direct-launch PATH.
+			options: { shell: "none", cwd: target.cwd, command, path_prepend: (process.env.PATH ?? "").split(delimiter).filter(Boolean) },
 		} },
 	});
 	writeFileSync(statePath, JSON.stringify({ session: target.session, layer_id: created.layer_id, block_id: created.block_ids[0] }), { mode: 0o600 });

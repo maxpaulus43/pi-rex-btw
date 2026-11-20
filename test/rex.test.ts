@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { mkdirSync, writeFileSync, mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { delimiter, join } from "node:path";
 import { test } from "node:test";
 import { openFloat, readLink } from "../extensions/rex.ts";
 
@@ -18,7 +18,7 @@ test("opens in the parent window, focuses a live float, and resumes without rese
 	writeFileSync(join(child, "snapshot.md"), "parent snapshot");
 	const target = { session: "session:test", block: "block:parent", cwd: directory, directory };
 	const layers = [{ layer_id: "layer:main", blocks: [{ block_id: target.block }] }];
-	const launches: { window_id: string; layout: { block: { options: { shell: string; command: string[] } } } }[] = [];
+	const launches: { window_id: string; layout: { block: { options: { shell: string; command: string[]; path_prepend: string[] } } } }[] = [];
 	const focused: object[] = [];
 	const pi = {
 		async exec(program: string, args: string[]) {
@@ -50,9 +50,11 @@ test("opens in the parent window, focuses a live float, and resumes without rese
 	const first = launches[0]!;
 	assert.equal(first.window_id, "window:parent");
 	assert.equal(first.layout.block.options.shell, "none");
+	assert.deepEqual(first.layout.block.options.path_prepend, (process.env.PATH ?? "").split(delimiter).filter(Boolean));
 	const command = first.layout.block.options.command;
 	assert.ok(!command.includes("--no-extensions"));
 	assert.ok(command.includes("--no-mcp"));
+	assert.deepEqual(command.slice(command.indexOf("--models"), command.indexOf("--models") + 2), ["--models", ""]);
 	assert.equal(command[command.indexOf("--tools") + 1], "read,grep,find,ls");
 	assert.deepEqual(command.slice(-2), ["--", ` ${thread.question}`]);
 
