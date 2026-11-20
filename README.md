@@ -2,6 +2,10 @@
 
 Ask a side question in a separate Pi chat without switching your main conversation. Requires Pi 1.6 and a Rex terminal with floating-layer support.
 
+
+https://github.com/user-attachments/assets/6e3e787a-1e43-4394-9584-fa795a603513
+
+
 Load this checkout with `pi -e /path/to/pi-rex-btw` inside Rex. Disable `pi-btw` if it already registers `/btw`.
 
 | Command | Action |
