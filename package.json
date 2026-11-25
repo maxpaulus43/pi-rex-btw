@@ -1,6 +1,6 @@
 {
     "name": "@maxpaulus/pi-rex-btw",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "description": "Multi-turn Pi side chats in Rex floating terminals",
     "type": "module",
     "keywords": [
