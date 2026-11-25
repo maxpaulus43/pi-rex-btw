@@ -12,11 +12,12 @@ function titleFor(question: string) {
 }
 
 function location(ctx: ExtensionContext) {
-	const { REX_SESSION: session, REX_BLOCK: block } = process.env;
-	if (!session || !block) throw new Error("Run /btw from a Rex terminal.");
+	const { REX_BLOCK: block } = process.env;
+	if (!block) throw new Error("Run /btw from a Rex terminal.");
 	const parent = ctx.sessionManager.getSessionFile();
 	if (!parent) throw new Error("/btw needs a saved Pi session. Start Pi without --no-session.");
-	return { session, block, directory: `${parent}.btw`, cwd: ctx.cwd };
+	// Rex takes a block ID anywhere it takes a session ID.
+	return { session: block, block, directory: `${parent}.btw`, cwd: ctx.cwd };
 }
 
 export default function (pi: ExtensionAPI) {

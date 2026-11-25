@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { mkdirSync, writeFileSync, mkdtempSync, rmSync } from "node:fs";
+import { mkdirSync, writeFileSync, readFileSync, mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { delimiter, join } from "node:path";
 import { test } from "node:test";
@@ -16,19 +16,19 @@ test("opens in the parent window, focuses a live float, and resumes without rese
 	const child = join(directory, thread.id);
 	mkdirSync(child);
 	writeFileSync(join(child, "snapshot.md"), "parent snapshot");
-	const target = { session: "session:test", block: "block:parent", cwd: directory, directory };
+	const target = { session: "block:parent", block: "block:parent", cwd: directory, directory };
 	const layers = [{ layer_id: "layer:main", blocks: [{ block_id: target.block }] }];
 	const launches: { window_id: string; layout: { block: { options: { shell: string; command: string[]; path_prepend: string[] } } } }[] = [];
 	const focused: object[] = [];
 	const pi = {
 		async exec(program: string, args: string[]) {
 			assert.equal(program, "rex");
-			assert.deepEqual(args.slice(0, 4), ["api", "call", "-s", target.session]);
+			assert.deepEqual(args.slice(0, 3), ["api", "call", "-s"]);
 			const payload = JSON.parse(args[5]!);
 			let result;
 			switch (args[4]) {
 				case "session.view":
-					result = { windows: [{ window_id: "window:other", layers: [] }, { window_id: "window:parent", layers }] };
+					result = { session_id: "session:test", windows: [{ window_id: "window:other", layers: [] }, { window_id: "window:parent", layers }] };
 					break;
 				case "session.new_layer":
 					launches.push(payload);
@@ -47,6 +47,7 @@ test("opens in the parent window, focuses a live float, and resumes without rese
 	};
 
 	await openFloat(pi, target, thread);
+	assert.equal(JSON.parse(readFileSync(join(child, "float.json"), "utf8")).session, "session:test");
 	const first = launches[0]!;
 	assert.equal(first.window_id, "window:parent");
 	assert.equal(first.layout.block.options.shell, "none");
