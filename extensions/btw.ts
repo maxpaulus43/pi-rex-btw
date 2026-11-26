@@ -16,8 +16,7 @@ function location(ctx: ExtensionContext) {
 	if (!block) throw new Error("Run /btw from a Rex terminal.");
 	const parent = ctx.sessionManager.getSessionFile();
 	if (!parent) throw new Error("/btw needs a saved Pi session. Start Pi without --no-session.");
-	// Rex takes a block ID anywhere it takes a session ID.
-	return { session: block, block, directory: `${parent}.btw`, cwd: ctx.cwd };
+	return { block, directory: `${parent}.btw`, cwd: ctx.cwd };
 }
 
 export default function (pi: ExtensionAPI) {

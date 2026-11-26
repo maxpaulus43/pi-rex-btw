@@ -19,7 +19,6 @@ export function readLink(entry: SessionEntry | undefined): Thread | undefined {
 }
 
 interface Target {
-	session: string;
 	block: string;
 	directory: string;
 	cwd: string;
@@ -30,7 +29,6 @@ interface Layer {
 	blocks: { block_id: string }[] | null;
 }
 interface View {
-	session_id: string;
 	windows: { window_id: string; layers: Layer[] }[];
 }
 
@@ -48,9 +46,9 @@ export async function openFloat(pi: Pick<ExtensionAPI, "exec">, target: Target, 
 	const snapshot = join(directory, "snapshot.md");
 	if (!existsSync(snapshot)) throw new Error("The saved BTW snapshot is missing.");
 	const statePath = join(directory, "float.json");
-	const view = await api<View>(target.session, "session.view");
-	// A block ID names its session, so resolve the real ID before saving it.
-	const session = view.session_id || target.session;
+	// Rex sets REX_BLOCK but not REX_SESSION, and rejects a block ID as a session target.
+	const { session_id: session } = await rex<{ session_id: string }>("block", "inspect", target.block, "--json");
+	const view = await api<View>(session, "session.view");
 	if (existsSync(statePath)) {
 		const { session: saved, layer_id, block_id } = JSON.parse(readFileSync(statePath, "utf8"));
 		const present = saved === session ||
@@ -74,7 +72,7 @@ export async function openFloat(pi: Pick<ExtensionAPI, "exec">, target: Target, 
 		// A leading space keeps Pi from treating an @-prefixed question as a file argument.
 		if (thread.question) command.push("--", ` ${thread.question}`);
 	}
-	const created = await api<{ layer_id: string; block_ids: string[] }>(target.session, "session.new_layer", {
+	const created = await api<{ layer_id: string; block_ids: string[] }>(session, "session.new_layer", {
 		window_id: window.window_id, bounds: [0.1, 0.1, 0.8, 0.8], focus: true,
 		layout: { block: {
 			flavor: "com.superlogical.terminal.shell", label: `BTW · ${thread.title}`,
