@@ -16,14 +16,22 @@ test("opens in the parent window, focuses a live float, and resumes without rese
 	const child = join(directory, thread.id);
 	mkdirSync(child);
 	writeFileSync(join(child, "snapshot.md"), "parent snapshot");
-	const target = { session: "block:parent", block: "block:parent", cwd: directory, directory };
+	const target = { block: "block:parent", cwd: directory, directory };
 	const layers = [{ layer_id: "layer:main", blocks: [{ block_id: target.block }] }];
 	const launches: { window_id: string; layout: { block: { options: { shell: string; command: string[]; path_prepend: string[] } } } }[] = [];
 	const focused: object[] = [];
 	const pi = {
 		async exec(program: string, args: string[]) {
 			assert.equal(program, "rex");
+			if (args[0] === "block") {
+				assert.deepEqual(args, ["block", "inspect", target.block, "--json"]);
+				return { code: 0, stdout: JSON.stringify({ block_id: target.block, session_id: "session:test" }), stderr: "", killed: false, truncated: false };
+			}
 			assert.deepEqual(args.slice(0, 3), ["api", "call", "-s"]);
+			// Rex rejects a block ID where it takes a session.
+			if (args[3] !== "session:test") {
+				return { code: 1, stdout: "", stderr: `session target "${args[3]}" not found: "${args[3]}" is a block ID, not a session`, killed: false, truncated: false };
+			}
 			const payload = JSON.parse(args[5]!);
 			let result;
 			switch (args[4]) {
